@@ -29,10 +29,6 @@
 
 현재는 총4개의 상품이 존재합니다.
 
-![스크린샷 2024-08-30 오후 2.53.41.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/dde1364e-4173-4400-840d-690f792d7c3d/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-08-30_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_2.53.41.png)
-
-![스크린샷 2024-08-30 오후 2.53.41.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/dde1364e-4173-4400-840d-690f792d7c3d/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-08-30_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_2.53.41.png)
-
 우리는 별도의 회원을 관리하지 않습니다. email로 고객을 구분해요. 주문을 받을때 email을 같이 받아서 주문을 받습니다. 하나의 email로 하루에 여러번 주문을 받더라도 하나로 합쳐서 다음날 배송을 보내면 됩니다.
 
 <aside>
@@ -41,3 +37,97 @@
 고객에게 “당일 오후 2시 이후의 주문은 다음날 배송을 시작합니다.”라고 알려 줍니다.
 
 </aside>
+
+###개발환경
+* intelliJ
+
+###백엔드 기술 스택
+* Spring Boot
+* dependencies
+  * Spring Boot DevTools
+  * Spring Web
+  * Spring Data JDBC
+  * Mybatis FrameWork
+  * MariaDB
+
+### 빌드도구
+  * gradle
+  * MariaDB
+
+### 패키지 구조
+
+### 테이블
+![스크린샷 2024-12-08 시간: 15.17.17.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/757d63da-6797-4dbc-9b90-efd080a5c6af/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-12-08_%E1%84%89%E1%85%B5%E1%84%80%E1%85%A1%E1%86%AB_15.17.17.png)
+
+![스크린샷 2024-12-08 시간: 19.10.33.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/00c307c2-17e7-4044-b4f2-522039810c34/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-12-08_%E1%84%89%E1%85%B5%E1%84%80%E1%85%A1%E1%86%AB_19.10.33.png)
+
+### 쿼리
+-- auto-generated definition
+create schema gc_coffee collate utf8mb4_general_ci;
+
+create table coffee
+(
+    coffee_id    int auto_increment
+        primary key,
+    coffee_name  varchar(50) not null,
+    coffee_price int         not null
+);
+
+create table orders
+(
+    order_id    int auto_increment
+        primary key,
+    email       varchar(50) not null,
+    total_price int         not null,
+    order_date  datetime(6) not null,
+    status      tinyint(1)  null,
+    constraint orders_ibfk_1
+        foreign key (email) references user (email)
+            on update cascade on delete cascade
+);
+create table ordersdetail
+(
+    order_id  int not null,
+    coffee_id int not null,
+    quantity  int not null,
+    primary key (order_id, coffee_id),
+    constraint ordersdetail_ibfk_1
+        foreign key (coffee_id) references coffee (coffee_id)
+            on update cascade on delete cascade,
+    constraint ordersdetail_ibfk_2
+        foreign key (order_id) references orders (order_id)
+            on update cascade on delete cascade
+);
+
+create table user
+(
+    email   varchar(50)  not null
+        primary key,
+    address varchar(200) not null,
+    zipcode varchar(50)  not null
+);
+
+#1차 프로젝트 구현 내용
+1. READ coffee 테이블
+   ![스크린샷 2024-12-08 시간: 15.03.45.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/d4cbf39f-fd16-424c-94d6-fae8a2f3d195/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-12-08_%E1%84%89%E1%85%B5%E1%84%80%E1%85%A1%E1%86%AB_15.03.45.png)
+   
+   ![스크린샷 2024-12-08 시간: 15.04.10.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/c7740e4c-e69e-4df8-ae57-b97418fe987d/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-12-08_%E1%84%89%E1%85%B5%E1%84%80%E1%85%A1%E1%86%AB_15.04.10.png)
+
+
+2. CREATE order 테이블 ( 주문 목록이 저장됨)
+   ![스크린샷 2024-12-08 시간: 15.02.17.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/13800927-917c-4ebd-9d70-ab5ef52de55e/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-12-08_%E1%84%89%E1%85%B5%E1%84%80%E1%85%A1%E1%86%AB_15.02.17.png)
+
+   ![스크린샷 2024-12-08 시간: 15.03.10.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/ef61e0e5-3b55-4bfa-a04b-fac630f198fa/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-12-08_%E1%84%89%E1%85%B5%E1%84%80%E1%85%A1%E1%86%AB_15.03.10.png)
+
+3. UPDATE order 테이블 (배송전 = 0, 배송완료 1)
+   ![스크린샷 2024-12-08 시간: 15.05.00.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/c916a002-8f85-4b52-b91f-58957ab25509/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-12-08_%E1%84%89%E1%85%B5%E1%84%80%E1%85%A1%E1%86%AB_15.05.00.png)
+
+   ![스크린샷 2024-12-08 시간: 15.05.08.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/acb07cc1-371a-4124-86a3-4f0379a32ddc/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-12-08_%E1%84%89%E1%85%B5%E1%84%80%E1%85%A1%E1%86%AB_15.05.08.png)
+   (배송 완료된 목록은 DB에 저장되어있지만 검색은 안됨)
+
+4. DELETE 사용자 이메일에 맞는 데이터를 삭제
+   ![스크린샷 2024-12-08 시간: 15.09.56.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/04307495-8143-4f7f-b488-fd2d17c96541/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-12-08_%E1%84%89%E1%85%B5%E1%84%80%E1%85%A1%E1%86%AB_15.09.56.png)
+
+   ![스크린샷 2024-12-08 시간: 15.10.02.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/89fde35f-d786-48b7-a620-56fc17eb00d5/1ca48566-c383-4a24-81f5-82e8437d8977/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-12-08_%E1%84%89%E1%85%B5%E1%84%80%E1%85%A1%E1%86%AB_15.10.02.png)
+
+   test@example.com 에 해당하는 주문 내역을 삭제 
